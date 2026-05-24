@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>源养智助 - AI体质测评药食同源智慧养生平台</title>
+  <meta name="description" content="源养智助——基于AI体质测评的药食同源智慧养生平台，提供熬夜膏、折耳根膏、茯苓黄姜膏等贵州道地药材产品，配备AI助手源养小智，精准匹配体质养生方案。" />
+  <meta name="keywords" content="源养智助,AI体质测评,药食同源,智慧养生,熬夜膏,折耳根膏,茯苓黄姜膏,贵州道地药材,源养小智" />
+  <meta property="og:title" content="源养智助 - AI智慧养生平台" />
+  <meta property="og:description" content="基于AI体质测评的药食同源智慧养生平台" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://yuanyanghzhu.cn" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "源养智助",
+    "description": "基于AI体质测评的药食同源智慧养生平台",
+    "url": "https://yuanyanghzhu.cn"
+  }
+  </script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ========== 顶部导航栏 ========== -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/jiqiren.png" class="logo-img" alt="logo" />
+        <span class="logo-text">源养智助</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link active">
+          <img src="assets/shouye.png" class="nav-icon" alt="首页" />首页
+        </a>
+        <a href="products.html" class="nav-link">
+          <img src="assets/caoyao.png" class="nav-icon" alt="产品" />产品介绍
+        </a>
+        <a href="community.html" class="nav-link">
+          <img src="assets/hudong.png" class="nav-icon" alt="社区" />互动社区
+        </a>
+        <a href="ai.html" class="nav-link">
+          <img src="assets/jiqiren.png" class="nav-icon" alt="AI" />AI助手
+        </a>
+        <a href="quiz.html" class="nav-link">
+          <img src="assets/yufang.png" class="nav-icon" alt="测评" />体质测评
+        </a>
+        <a href="about.html" class="nav-link">
+          <img src="assets/yonghu.png" class="nav-icon" alt="关于" />关于我们
+        </a>
+        <a href="feedback.html" class="nav-link">
+          <img src="assets/pinglun.png" class="nav-icon" alt="反馈" />用户反馈
+        </a>
+        <a href="download.html" class="nav-link nav-download">
+          下载App
+        </a>
+        <button id="navAvatarBtn" onclick="UserModule.openModal()" style="
+          width:38px;height:38px;border-radius:50%;border:2px solid #ddd;
+          background:#f5f5f5;cursor:pointer;display:flex;align-items:center;justify-content:center;
+          overflow:hidden;flex-shrink:0;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#2d6a4f'" onmouseout="this.style.borderColor='#ddd'">
+          <img src="assets/yonghu.png" style="width:20px;height:20px;opacity:0.7;">
+        </button>
+      </div>
+      <div class="nav-hamburger" id="navHamburger" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ========== 首页内容 ========== -->
+  <section class="hero-section" id="home">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">源养智助</h1>
+      <p class="hero-subtitle">AI体质测评 · 药食同源 · 智慧养生</p>
+      <div class="hero-features">
+        <div class="feature-tag">
+          <img src="assets/caoyao.png" class="feature-icon" alt="" />贵州道地药材
+        </div>
+        <div class="feature-tag">
+          <img src="assets/jiqiren.png" class="feature-icon" alt="" />AI智能测评
+        </div>
+        <div class="feature-tag">
+          <img src="assets/yufang.png" class="feature-icon" alt="" />精准养生方案
+        </div>
+      </div>
+    </div>
+    <!-- 下载按钮：固定在屏幕2/3处 -->
+    <div class="hero-download-wrap">
+      <a href="download.html" class="download-btn-hero">
+        <img src="assets/xiazai.png" class="download-btn-icon" alt="下载" />
+        <span>下 载</span>
+      </a>
+      <p class="download-hint">Android / iOS 全平台支持</p>
+    </div>
+  </section>
+
+  <!-- ========== 页脚 ========== -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <img src="assets/jiqiren.png" class="footer-logo-img" alt="源养智助" />
+        <span class="logo-text">源养智助</span>
+        <p>AI体质测评 · 药食同源 · 智慧养生</p>
+      </div>
+      <div class="footer-links">
+        <a href="index.html">首页</a>
+        <a href="products.html">产品</a>
+        <a href="ai.html">AI助手</a>
+        <a href="quiz.html">体质测评</a>
+        <a href="about.html">关于</a>
+      </div>
+      <div class="footer-copy">
+        © 2026 源养智助 · 基于AI体质测评的药食同源智慧养生平台
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/user.js"></script>
+</body>
+</html>

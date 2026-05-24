@@ -1,0 +1,210 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>体质测评 - 源养智助</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .quiz-start { text-align: center; padding: 40px 20px; }
+    .quiz-big-icon { width: 72px; height: 72px; object-fit: contain; margin-bottom: 16px; }
+    .quiz-start h3 { font-size: 24px; color: #1a4a2e; margin-bottom: 12px; font-weight: 700; }
+    .quiz-start p { color: #777; font-size: 15px; margin-bottom: 28px; }
+    .quiz-start-btn {
+      background: linear-gradient(135deg, #1a4a2e, #2d6a4f); color: #fff; border: none;
+      padding: 14px 48px; border-radius: 50px; font-size: 17px; font-weight: 700;
+      cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; letter-spacing: 3px;
+    }
+    .quiz-start-btn:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(45,106,79,0.4); }
+    .quiz-progress { height: 6px; background: rgba(45,106,79,0.12); border-radius: 3px; margin-bottom: 32px; overflow: hidden; }
+    .quiz-progress-bar { height: 100%; background: linear-gradient(90deg, #1a4a2e, #2d6a4f); border-radius: 3px; transition: width 0.4s ease; width: 0%; }
+    .quiz-question-text { font-size: 18px; color: #1a4a2e; font-weight: 600; margin-bottom: 24px; line-height: 1.6; text-align: center; }
+    .quiz-questions { padding: 0 8px; }
+    .quiz-options { display: flex; flex-direction: column; gap: 12px; }
+    .quiz-option {
+      background: rgba(45,106,79,0.06); border: 1.5px solid rgba(45,106,79,0.2);
+      border-radius: 14px; padding: 14px 20px; color: #1a4a2e;
+      font-size: 15px; cursor: pointer; transition: all 0.25s ease; text-align: center;
+    }
+    .quiz-option:hover { background: rgba(45,106,79,0.12); border-color: rgba(45,106,79,0.4); transform: translateX(4px); }
+    .quiz-option.selected { background: rgba(45,106,79,0.15); border-color: #2d6a4f; color: #1a4a2e; font-weight: 600; }
+    .quiz-result { text-align: center; padding: 20px; }
+    .quiz-result-icon-img { width: 72px; height: 72px; object-fit: contain; margin-bottom: 16px; }
+    .quiz-result-title { font-size: 26px; color: #1a4a2e; margin-bottom: 12px; font-weight: 700; }
+    .quiz-result-desc { color: #555; font-size: 15px; line-height: 1.8; margin-bottom: 24px; text-align: left; }
+    .quiz-result-products { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 24px; }
+    .quiz-product-tag { background: rgba(45,106,79,0.1); border: 1px solid rgba(45,106,79,0.25); border-radius: 20px; padding: 8px 18px; color: #2d6a4f; font-size: 13px; font-weight: 600; }
+    .quiz-restart-btn { background: rgba(45,106,79,0.1); border: 1.5px solid rgba(45,106,79,0.3); color: #2d6a4f; padding: 12px 36px; border-radius: 50px; font-size: 15px; cursor: pointer; transition: all 0.2s; }
+    .quiz-restart-btn:hover { background: rgba(45,106,79,0.18); color: #1a4a2e; }
+    .quiz-disclaimer { margin-top: 30px; padding: 14px 18px; background: rgba(200,150,50,0.06); border: 1px solid rgba(200,150,50,0.2); border-radius: 10px; text-align: center; font-size: 13px; color: #888; line-height: 1.7; }
+    .quiz-disclaimer strong { color: #c89632; font-weight: 600; }
+    /* 弹窗 */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+    .modal-overlay.active { display: flex; }
+    .modal-box { background: #fff; border-radius: 16px; padding: 28px 24px; max-width: 440px; width: 100%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.25); }
+    .modal-box h4 { color: #1a4a2e; font-size: 20px; margin-bottom: 16px; font-weight: 700; }
+    .modal-box p { color: #555; font-size: 14px; line-height: 1.9; margin-bottom: 14px; text-align: left; }
+    .modal-box .modal-warn { color: #c89632; font-size: 13px; background: rgba(200,150,50,0.08); border: 1px solid rgba(200,150,50,0.2); border-radius: 8px; padding: 12px; margin-top: 14px; line-height: 1.7; }
+    .modal-confirm-btn { background: linear-gradient(135deg, #1a4a2e, #2d6a4f); color: #fff; border: none; padding: 12px 40px; border-radius: 50px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 20px; transition: transform 0.2s, box-shadow 0.2s; letter-spacing: 2px; }
+    .modal-confirm-btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(45,106,79,0.4); }
+    .modal-cancel-btn { background: transparent; border: 1.5px solid #ccc; color: #888; padding: 10px 28px; border-radius: 50px; font-size: 14px; cursor: pointer; margin-left: 12px; transition: all 0.2s; }
+    .modal-cancel-btn:hover { border-color: #1a4a2e; color: #1a4a2e; }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部导航栏 -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo"><img src="assets/jiqiren.png" class="logo-img" alt="logo" /><span class="logo-text">源养智助</span></a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link"><img src="assets/shouye.png" class="nav-icon" alt="首页" />首页</a>
+        <a href="products.html" class="nav-link"><img src="assets/caoyao.png" class="nav-icon" alt="产品" />产品介绍</a>
+        <a href="community.html" class="nav-link"><img src="assets/hudong.png" class="nav-icon" alt="社区" />互动社区</a>
+        <a href="ai.html" class="nav-link"><img src="assets/jiqiren.png" class="nav-icon" alt="AI" />AI助手</a>
+        <a href="quiz.html" class="nav-link active"><img src="assets/yufang.png" class="nav-icon" alt="测评" />体质测评</a>
+        <a href="about.html" class="nav-link"><img src="assets/yonghu.png" class="nav-icon" alt="关于" />关于我们</a>
+        <a href="feedback.html" class="nav-link"><img src="assets/pinglun.png" class="nav-icon" alt="反馈" />用户反馈</a>
+        <a href="download.html" class="nav-link nav-download">下载App</a>
+        <button id="navAvatarBtn" onclick="UserModule.openModal()" style="
+          width:38px;height:38px;border-radius:50%;border:2px solid #ddd;
+          background:#f5f5f5;cursor:pointer;display:flex;align-items:center;justify-content:center;
+          overflow:hidden;flex-shrink:0;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#2d6a4f'" onmouseout="this.style.borderColor='#ddd'">
+          <img src="assets/yonghu.png" style="width:20px;height:20px;opacity:0.7;">
+        </button>
+      </div>
+      <div class="nav-hamburger" id="navHamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+    </div>
+  </nav>
+
+  <!-- 体质测评内容 -->
+  <section class="section" style="padding-top: 120px;">
+    <div class="section-container">
+      <h2 class="section-title">体质测评</h2>
+      <p class="section-desc">5分钟快速测评，了解您的体质类型，获取专属养生建议</p>
+
+      <!-- 弹窗提示 -->
+      <div class="modal-overlay" id="quizModal">
+        <div class="modal-box">
+          <h4>📋 测评说明</h4>
+          <p>本测评基于<strong style="color:#a7f3d0;">中华中医药学会《中医体质分类与判定》</strong>标准（ZYYXH/T157-2009）设计，共6道核心题目，结合九大体质分类维度，评估您的中医体质类型。</p>
+          <p>请根据<strong style="color:#a7f3d0;">近三个月</strong>的真实感受作答，测评结果仅供参考。</p>
+          <div class="modal-warn">⚠️ 该测评仅用作参考，非权威认证。如身体发生不适或异常情况，请及时就医。</div>
+          <button class="modal-confirm-btn" onclick="confirmAndStart()">我已知晓，开始测评</button>
+          <button class="modal-cancel-btn" onclick="closeModal()">取消</button>
+        </div>
+      </div>
+
+      <!-- 测评区域 -->
+      <div class="quiz-container" id="quizContainer">
+        <!-- 开始页 -->
+        <div class="quiz-start" id="quizStart">
+          <img src="assets/yufang.png" class="quiz-big-icon" alt="测评" />
+          <h3>开始体质测评</h3>
+          <p>基于中医九大体质理论，科学评估您的体质类型</p>
+          <button class="quiz-start-btn" onclick="showModal()">开始测评</button>
+        </div>
+        <!-- 答题区 -->
+        <div class="quiz-questions" id="quizQuestions" style="display:none;">
+          <div class="quiz-progress"><div class="quiz-progress-bar" id="quizProgressBar"></div></div>
+          <div class="quiz-question-text" id="quizQuestionText"></div>
+          <div class="quiz-options" id="quizOptions"></div>
+        </div>
+        <!-- 结果页 -->
+        <div class="quiz-result" id="quizResult" style="display:none;">
+          <img src="assets/dianzan.png" class="quiz-result-icon-img" id="quizResultIcon" alt="结果" />
+          <h3 class="quiz-result-title" id="quizResultTitle"></h3>
+          <p class="quiz-result-desc" id="quizResultDesc"></p>
+          <div class="quiz-result-products" id="quizResultProducts"></div>
+          <button class="quiz-restart-btn" onclick="restartQuiz()">重新测评</button>
+          <div class="quiz-disclaimer">
+            <strong>⚠️ 免责声明</strong><br/>
+            本测评仅供养生参考，不能代替医学诊断。如有不适，请咨询专业医师。
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand"><img src="assets/jiqiren.png" class="footer-logo-img" alt="源养智助" /><span class="logo-text">源养智助</span><p>AI体质测评 · 药食同源 · 智慧养生</p></div>
+      <div class="footer-links"><a href="index.html">首页</a><a href="products.html">产品</a><a href="ai.html">AI助手</a><a href="quiz.html">体质测评</a><a href="about.html">关于</a></div>
+      <div class="footer-copy">© 2026 源养智助 · 基于AI体质测评的药食同源智慧养生平台</div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    /* 弹窗控制 */
+    function showModal() { document.getElementById('quizModal').classList.add('active'); }
+    function closeModal() { document.getElementById('quizModal').classList.remove('active'); }
+    function confirmAndStart() { closeModal(); startQuiz(); }
+
+    /* 题库（基于《中医体质分类与判定》ZYYXH/T157-2009）*/
+    const questions = [
+      { q: "您容易疲乏、气短吗？", type: "气虚质", opts: ["从不", "偶尔", "有时", "经常", "总是"] },
+      { q: "您容易手脚冰凉、怕冷吗？", type: "阳虚质", opts: ["从不", "偶尔", "有时", "经常", "总是"] },
+      { q: "您容易口干舌燥或便秘吗？", type: "阴虚质", opts: ["从不", "偶尔", "有时", "经常", "总是"] },
+      { q: "您体形偏胖、腹部肥满吗？", type: "痰湿质", opts: ["从不", "偶尔", "有时", "经常", "总是"] },
+      { q: "您容易急躁、情绪低落吗？", type: "气郁质", opts: ["从不", "偶尔", "有时", "经常", "总是"] },
+      { q: "您的皮肤容易过敏或长疹子吗？", type: "特禀质", opts: ["从不", "偶尔", "有时", "经常", "总是"] },
+    ];
+    const results = {
+      "气虚质": { name: "气虚质", desc: "元气不足，容易疲乏、气短懒言。宜补气养元，多食山药、黄芪，避免过度劳累。", products: ["熬夜膏", "黄芪红枣茶", "参麦茶"] },
+      "阳虚质": { name: "阳虚质", desc: "阳气不足，畏寒怕冷，手足不温。宜温补阳气，多食羊肉、桂圆，注意保暖。", products: ["姜枣桂圆膏", "肉苁蓉茶"] },
+      "阴虚质": { name: "阴虚质", desc: "阴液亏少，口干咽燥，手足心热。宜滋阴润燥，少食辛辣，多食梨、银耳。", products: ["折耳根膏", "百合银耳羹", "枸杞菊花茶"] },
+      "痰湿质": { name: "痰湿质", desc: "痰湿凝聚，体形肥胖，身重不爽。宜健脾化痰，饮食清淡，多食薏仁、冬瓜。", products: ["茯苓黄姜膏", "薏仁红豆茶", "荷叶山楂茶"] },
+      "气郁质": { name: "气郁质", desc: "气机郁滞，情绪抑郁，多愁善感。宜疏肝解郁，保持心情舒畅，多食玫瑰花。", products: ["熬夜膏", "玫瑰花茶", "酸枣仁安神膏"] },
+      "特禀质": { name: "特禀质", desc: "先天禀赋异常，易过敏。宜益气固本，明确并规避过敏原，严重时请就医。", products: ["折耳根膏", "灵芝孢子粉", "紫苏茶"] },
+    };
+
+    let curQ = 0, answers = [];
+    function startQuiz() {
+      curQ = 0; answers = [];
+      document.getElementById('quizStart').style.display = 'none';
+      document.getElementById('quizQuestions').style.display = 'block';
+      document.getElementById('quizResult').style.display = 'none';
+      showQ();
+    }
+    function showQ() {
+      document.getElementById('quizProgressBar').style.width = (curQ / questions.length * 100) + '%';
+      const q = questions[curQ];
+      document.getElementById('quizQuestionText').innerHTML = `<span style="font-size:12px;color:rgba(255,255,255,0.45);">${curQ+1} / ${questions.length}</span><br/>${q.q}`;
+      const optEl = document.getElementById('quizOptions');
+      optEl.innerHTML = '';
+      q.opts.forEach((txt, i) => {
+        const btn = document.createElement('div');
+        btn.className = 'quiz-option';
+        btn.textContent = txt;
+        btn.onclick = () => { document.querySelectorAll('.quiz-option').forEach(o=>o.classList.remove('selected')); btn.classList.add('selected'); answers.push({ type: q.type, score: i+1 }); setTimeout(() => { curQ++; curQ < questions.length ? showQ() : showResult(); }, 350); };
+        optEl.appendChild(btn);
+      });
+    }
+    function showResult() {
+      document.getElementById('quizQuestions').style.display = 'none';
+      document.getElementById('quizResult').style.display = 'block';
+      document.getElementById('quizProgressBar').style.width = '100%';
+      const tally = {};
+      answers.forEach(a => { tally[a.type] = (tally[a.type]||0) + a.score; });
+      let top = Object.keys(tally)[0];
+      Object.keys(tally).forEach(k => { if (tally[k] > tally[top]) top = k; });
+      const r = results[top];
+      document.getElementById('quizResultTitle').textContent = r.name;
+      document.getElementById('quizResultDesc').textContent = r.desc;
+      const prodEl = document.getElementById('quizResultProducts');
+      prodEl.innerHTML = '';
+      r.products.forEach(p => { const s = document.createElement('span'); s.className = 'quiz-product-tag'; s.textContent = p; prodEl.appendChild(s); });
+    }
+    function restartQuiz() {
+      document.getElementById('quizStart').style.display = 'block';
+      document.getElementById('quizQuestions').style.display = 'none';
+      document.getElementById('quizResult').style.display = 'none';
+      document.getElementById('quizProgressBar').style.width = '0%';
+    }
+  </script>
+  <script src="js/user.js"></script>
+</body>
+</html>
+

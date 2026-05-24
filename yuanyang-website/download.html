@@ -1,0 +1,111 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>下载App - 源养智助</title>
+  <meta name="description" content="下载源养智助App，开启您的智慧养生之旅。支持Android、iOS及微信小程序。" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ========== 顶部导航栏 ========== -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/jiqiren.png" class="logo-img" alt="logo" />
+        <span class="logo-text">源养智助</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">
+          <img src="assets/shouye.png" class="nav-icon" alt="首页" />首页
+        </a>
+        <a href="products.html" class="nav-link">
+          <img src="assets/caoyao.png" class="nav-icon" alt="产品" />产品介绍
+        </a>
+        <a href="community.html" class="nav-link">
+          <img src="assets/hudong.png" class="nav-icon" alt="社区" />互动社区
+        </a>
+        <a href="ai.html" class="nav-link">
+          <img src="assets/jiqiren.png" class="nav-icon" alt="AI" />AI助手
+        </a>
+        <a href="quiz.html" class="nav-link">
+          <img src="assets/yufang.png" class="nav-icon" alt="测评" />体质测评
+        </a>
+        <a href="about.html" class="nav-link">
+          <img src="assets/yonghu.png" class="nav-icon" alt="关于" />关于我们
+        </a>
+        <a href="feedback.html" class="nav-link">
+          <img src="assets/pinglun.png" class="nav-icon" alt="反馈" />用户反馈
+        </a>
+        <a href="download.html" class="nav-link nav-download active">
+          下载App
+        </a>
+        <button id="navAvatarBtn" onclick="UserModule.openModal()" style="
+          width:38px;height:38px;border-radius:50%;border:2px solid #ddd;
+          background:#f5f5f5;cursor:pointer;display:flex;align-items:center;justify-content:center;
+          overflow:hidden;flex-shrink:0;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#2d6a4f'" onmouseout="this.style.borderColor='#ddd'">
+          <img src="assets/yonghu.png" style="width:20px;height:20px;opacity:0.7;">
+        </button>
+      </div>
+      <div class="nav-hamburger" id="navHamburger" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ========== 下载页面内容 ========== -->
+  <section class="section" style="min-height: 100vh; padding-top: 120px;">
+    <div class="section-container download-section">
+      <h2 class="section-title">下载源养智助App</h2>
+      <p class="section-desc">立即下载，开启您的智慧养生之旅</p>
+      <div class="download-cards">
+        <div class="download-card">
+          <img src="assets/jiqiren.png" class="download-icon-big" alt="Android" />
+          <h3>Android 版</h3>
+          <p>支持 Android 8.0 及以上系统</p>
+          <!-- TODO: 替换为真实APK云存储地址 -->
+          <a href="#" class="download-link" onclick="alert('安装包即将上线，敬请期待！');return false;">下载 APK</a>
+        </div>
+        <div class="download-card">
+          <img src="assets/yonghu.png" class="download-icon-big" alt="iOS" />
+          <h3>iOS 版</h3>
+          <p>支持 iOS 14.0 及以上系统</p>
+          <a href="#" class="download-link disabled">即将上线</a>
+        </div>
+        <div class="download-card">
+          <img src="assets/pinglun.png" class="download-icon-big" alt="小程序" />
+          <h3>微信小程序</h3>
+          <p>无需下载，微信内直接使用</p>
+          <a href="#" class="download-link disabled">即将上线</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 页脚 ========== -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <img src="assets/jiqiren.png" class="footer-logo-img" alt="源养智助" />
+        <span class="logo-text">源养智助</span>
+        <p>AI体质测评 · 药食同源 · 智慧养生</p>
+      </div>
+      <div class="footer-links">
+        <a href="index.html">首页</a>
+        <a href="products.html">产品</a>
+        <a href="ai.html">AI助手</a>
+        <a href="quiz.html">体质测评</a>
+        <a href="about.html">关于</a>
+      </div>
+      <div class="footer-copy">
+        © 2026 源养智助 · 基于AI体质测评的药食同源智慧养生平台
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/user.js"></script>
+</body>
+</html>
+
