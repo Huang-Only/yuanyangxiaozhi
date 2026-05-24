@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>文章详情 - 源养智助</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .article-hero {
+      background: linear-gradient(160deg, #1a4a2e 0%, #2d6a4f 100%);
+      padding: 80px 24px 40px;
+      color: #fff;
+    }
+    .article-hero .back-link {
+      color: rgba(255,255,255,0.8); font-size: 14px; cursor: pointer;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 4px;
+      margin-bottom: 16px; transition: color 0.2s;
+    }
+    .article-hero .back-link:hover { color: #fff; }
+    .article-hero h2 { font-size: 24px; line-height: 1.5; margin-bottom: 12px; }
+    .article-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .article-meta .author { font-size: 15px; font-weight: 600; }
+    .article-meta .time { font-size: 13px; color: rgba(255,255,255,0.65); }
+
+    .article-body {
+      max-width: 680px; margin: 0 auto; padding: 32px 20px 100px;
+    }
+    .article-content {
+      color: #333; font-size: 16px; line-height: 2; margin-bottom: 28px; white-space: pre-wrap;
+    }
+    .article-images { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; }
+    .article-images img {
+      width: calc(50% - 5px); max-width: 280px; height: 180px;
+      object-fit: cover; border-radius: 12px; cursor: pointer;
+    }
+
+    /* 点赞区 */
+    .article-like-section {
+      text-align: center; padding: 24px 0; border-top: 1px solid #eee;
+      border-bottom: 1px solid #eee; margin-bottom: 32px;
+    }
+    .like-btn {
+      background: none; border: 2px solid #e74c3c; color: #e74c3c;
+      padding: 10px 32px; border-radius: 50px; font-size: 16px;
+      cursor: pointer; transition: all 0.25s; font-weight: 600;
+    }
+    .like-btn:hover { background: #e74c3c; color: #fff; }
+    .like-btn.liked { background: #e74c3c; color: #fff; border-color: #e74c3c; }
+    .like-count { font-size: 14px; color: #999; margin-top: 8px; }
+
+    /* 评论区 */
+    .comment-section h3 { color: #1a4a2e; font-size: 18px; margin-bottom: 16px; }
+    .comment-input-wrap {
+      display: flex; gap: 10px; margin-bottom: 24px; align-items: flex-start;
+    }
+    .comment-input {
+      flex: 1; border: 1.5px solid #ddd; border-radius: 10px;
+      padding: 10px 14px; font-size: 14px; resize: vertical;
+      min-height: 60px; outline: none; font-family: inherit;
+    }
+    .comment-input:focus { border-color: #2d6a4f; }
+    .comment-submit {
+      background: linear-gradient(135deg, #1a4a2e, #2d6a4f); color: #fff;
+      border: none; padding: 10px 20px; border-radius: 10px;
+      font-size: 14px; cursor: pointer; flex-shrink: 0; align-self: flex-end;
+    }
+    .comment-item {
+      display: flex; gap: 10px; padding: 14px 0; border-bottom: 1px solid #f0f0f0;
+    }
+    .comment-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, #ddd, #bbb);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: #666; flex-shrink: 0;
+    }
+    .comment-body { flex: 1; }
+    .comment-author { font-weight: 600; color: #1a4a2e; font-size: 14px; }
+    .comment-text { color: #333; font-size: 14px; line-height: 1.7; margin-top: 4px; }
+    .comment-time { font-size: 12px; color: #aaa; margin-top: 4px; }
+    .no-comments { text-align: center; color: #ccc; padding: 32px 0; font-size: 14px; }
+
+    /* 评论操作按钮 */
+    .comment-actions { display: flex; gap: 16px; margin-top: 6px; }
+    .comment-action-btn {
+      background: none; border: none; color: #999; font-size: 13px;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 6px; border-radius: 4px; transition: all 0.2s;
+    }
+    .comment-action-btn:hover { color: #2d6a4f; background: rgba(45,106,79,0.06); }
+    .comment-action-btn.liked { color: #e74c3c; }
+    .comment-action-btn img { width: 14px; height: 14px; opacity: 0.55; }
+    .comment-action-btn.liked img { opacity: 1; }
+    .comment-action-btn.delete-btn:hover { color: #e74c3c; background: rgba(231,76,60,0.06); }
+
+    /* 回复输入区 */
+    .reply-input-wrap {
+      display: flex; gap: 8px; margin-top: 8px; margin-bottom: 8px; align-items: flex-start;
+    }
+    .reply-input {
+      flex: 1; border: 1.5px solid #ddd; border-radius: 8px;
+      padding: 8px 10px; font-size: 13px; resize: vertical; min-height: 36px;
+      outline: none; font-family: inherit; box-sizing: border-box;
+    }
+    .reply-input:focus { border-color: #2d6a4f; }
+    .reply-submit {
+      background: #2d6a4f; color: #fff; border: none;
+      padding: 8px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; flex-shrink: 0;
+    }
+    .reply-cancel {
+      background: none; border: 1.5px solid #ddd; color: #999;
+      padding: 8px 10px; border-radius: 8px; font-size: 13px; cursor: pointer;
+    }
+
+    .error-page { text-align: center; padding: 120px 20px; color: #aaa; }
+    .error-page h3 { color: #666; font-size: 20px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+
+  <!-- 导航栏 -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/jiqiren.png" class="logo-img" alt="logo" />
+        <span class="logo-text">源养智助</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link"><img src="assets/shouye.png" class="nav-icon" alt="首页" />首页</a>
+        <a href="products.html" class="nav-link"><img src="assets/caoyao.png" class="nav-icon" alt="产品" />产品介绍</a>
+        <a href="community.html" class="nav-link active"><img src="assets/hudong.png" class="nav-icon" alt="社区" />互动社区</a>
+        <a href="ai.html" class="nav-link"><img src="assets/jiqiren.png" class="nav-icon" alt="AI" />AI助手</a>
+        <a href="quiz.html" class="nav-link"><img src="assets/yufang.png" class="nav-icon" alt="测评" />体质测评</a>
+        <a href="about.html" class="nav-link"><img src="assets/yonghu.png" class="nav-icon" alt="关于" />关于我们</a>
+        <a href="feedback.html" class="nav-link"><img src="assets/pinglun.png" class="nav-icon" alt="反馈" />用户反馈</a>
+        <a href="download.html" class="nav-link nav-download">下载App</a>
+        <button id="navAvatarBtn" onclick="UserModule.openModal()" style="
+          width:38px;height:38px;border-radius:50%;border:2px solid #ddd;
+          background:#f5f5f5;cursor:pointer;display:flex;align-items:center;justify-content:center;
+          overflow:hidden;flex-shrink:0;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#2d6a4f'" onmouseout="this.style.borderColor='#ddd'">
+          <img src="assets/yonghu.png" style="width:20px;height:20px;opacity:0.7;">
+        </button>
+      </div>
+      <div class="nav-hamburger" id="navHamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+    </div>
+  </nav>
+
+  <!-- 文章主体由 JS 渲染 -->
+  <div id="articleRoot"></div>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <div class="footer-brand">
+      <img src="assets/jiqiren.png" class="footer-logo" alt="Logo" />
+      <span>源养智助</span>
+    </div>
+    <p class="footer-desc">AI 体质测评 × 药食同源 · 智慧养生平台</p>
+    <p class="footer-copy">© 2026 源养智助 · 互联网养生新范式</p>
+  </footer>
+
+  <script>
+    const STORAGE_KEY = 'yyzs_community_posts';
+
+    function loadPosts() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+      catch { return []; }
+    }
+    function savePosts(posts) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+    }
+    function getPostById(id) {
+      return loadPosts().find(p => p.id === id);
+    }
+
+    /* 给没有 id 的旧评论补上 id */
+    function ensureCommentIds(comments) {
+      if (!comments) return;
+      comments.forEach(c => {
+        if (!c.id) c.id = 'comment_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+      });
+    }
+
+    /* 获取当前文章（可直接修改） */
+    function getPostForEdit(postId) {
+      const posts = loadPosts();
+      return { posts, post: posts.find(p => p.id === postId) };
+    }
+
+    function renderArticle() {
+      const params = new URLSearchParams(location.search);
+      const postId = params.get('id');
+      const root = document.getElementById('articleRoot');
+      const currentUser = UserModule.getCurrentUser();
+
+      if (!postId) { root.innerHTML = '<div class="error-page"><h3>参数错误</h3><p>未找到文章 ID</p></div>'; return; }
+
+      const post = getPostById(postId);
+      if (!post) {
+        root.innerHTML = '<div class="error-page"><h3>文章不存在</h3><p>该文章可能已被删除</p><p style="margin-top:20px;"><a href="community.html" style="color:#2d6a4f;">← 返回社区</a></p></div>';
+        return;
+      }
+
+      /* 升级旧评论数据（补 id / likes / likedByMe） */
+      if (post.comments) {
+        let needSave = false;
+        post.comments.forEach(c => {
+          if (!c.id) { c.id = 'comment_' + Date.now() + '_' + Math.random().toString(36).slice(2,6); needSave = true; }
+          if (c.likes === undefined) { c.likes = 0; needSave = true; }
+          if (c.likedByMe === undefined) { c.likedByMe = false; needSave = true; }
+        });
+        if (needSave) { const { posts } = getPostForEdit(postId); savePosts(posts); }
+      }
+
+      document.title = (post.author ? post.author + '：' : '') + (post.content || '').slice(0,20) + ' - 源养智助';
+
+      const isPostAuthor = currentUser && currentUser === post.author;
+
+      root.innerHTML = `
+        <section class="article-hero">
+          <a class="back-link" href="community.html">← 返回社区</a>
+          <h2>${escHtml(post.content).slice(0, 50).replace(/</g,'&lt;').replace(/>/g,'&gt;')}${post.content.length > 50 ? '…' : ''}</h2>
+          <div class="article-meta">
+            <span class="author">${escHtml(post.author)}</span>
+            <span class="time">${formatTime(post.timestamp)}</span>
+          </div>
+        </section>
+
+        <div class="article-body">
+          <div class="article-content">${escHtml(post.content).replace(/\n/g, '<br>')}</div>
+
+          ${post.images && post.images.length > 0 ? `
+            <div class="article-images">
+              ${post.images.map(img => `<img src="${img}" alt="配图" onclick="window.open('${img}','_blank')" />`).join('')}
+            </div>` : ''}
+
+          <div class="article-like-section">
+            <button class="like-btn ${post.likedByMe ? 'liked' : ''}" onclick="toggleLike('${post.id}')">
+              ${post.likedByMe ? '❤️ 已赞' : '🤍 点赞'}
+            </button>
+            <div class="like-count">已有 <strong>${post.likes}</strong> 人点赞</div>
+          </div>
+
+          <div class="comment-section">
+            <h3>评论（${post.comments ? post.comments.length : 0}）</h3>
+            <div class="comment-input-wrap">
+              <textarea class="comment-input" id="commentInput" placeholder="写下你的评论…"></textarea>
+              <button class="comment-submit" onclick="submitComment('${post.id}')">发送</button>
+            </div>
+            <div id="commentList">
+              ${post.comments && post.comments.length > 0 ? post.comments.map(c => {
+                const isCommentAuthor = currentUser && currentUser === c.author;
+                const canDelete = isCommentAuthor || isPostAuthor;
+                return `
+                <div class="comment-item" id="comment_${c.id}" style="flex-direction:column;align-items:flex-start;">
+                  <div style="display:flex;gap:10px;width:100%;">
+                    <div class="comment-avatar">${(c.author || '匿')[0]}</div>
+                    <div class="comment-body" style="flex:1;">
+                      <div class="comment-author">${escHtml(c.author || '匿名')}</div>
+                      <div class="comment-text">${escHtml(c.content).replace(/\n/g,'<br>')}</div>
+                      <div class="comment-time">${formatTime(c.timestamp)}</div>
+                      <div class="comment-actions">
+                        <button class="comment-action-btn ${c.likedByMe ? 'liked' : ''}" onclick="likeComment('${post.id}','${c.id}')">
+                          点赞 ${c.likes > 0 ? c.likes : ''}
+                        </button>
+                        <button class="comment-action-btn" onclick="showReplyInput('${post.id}','${c.id}','${escHtml(c.author || '匿名')}')">
+                          <img src="assets/pinglun.png" style="width:14px;height:14px;opacity:0.55;" />
+                          回复
+                        </button>
+                        ${canDelete ? `
+                        <button class="comment-action-btn delete-btn" onclick="deleteComment('${post.id}','${c.id}')">
+                          删除
+                        </button>` : ''}
+                      </div>
+                      <!-- 回复输入区（默认隐藏） -->
+                      <div class="reply-input-wrap" id="replyWrap_${c.id}" style="display:none;">
+                        <textarea class="reply-input" id="replyInput_${c.id}" placeholder="回复 ${escHtml(c.author || '匿名')}…"></textarea>
+                        <button class="reply-submit" onclick="submitReply('${post.id}','${c.id}')">发送</button>
+                        <button class="reply-cancel" onclick="cancelReply('${c.id}')">取消</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>`;
+              }).join('') : '<div class="no-comments">暂无评论，快来抢沙发吧 🛋️</div>'}
+            </div>
+          </div>
+        </div>`;
+    }
+
+    /* ========== 帖子点赞 ========== */
+    function toggleLike(postId) {
+      const posts = loadPosts();
+      const post = posts.find(p => p.id === postId);
+      if (!post) return;
+      post.likedByMe = !post.likedByMe;
+      post.likes += post.likedByMe ? 1 : -1;
+      savePosts(posts);
+      renderArticle();
+    }
+
+    /* ========== 发表评论 ========== */
+    function submitComment(postId) {
+      const input = document.getElementById('commentInput');
+      const content = input.value.trim();
+      if (!content) { alert('请输入评论内容'); return; }
+      const { posts, post } = getPostForEdit(postId);
+      if (!post) return;
+      if (!post.comments) post.comments = [];
+      const currentUser = UserModule.getCurrentUser() || '我';
+      post.comments.push({
+        id: 'comment_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
+        author: currentUser,
+        content: content,
+        timestamp: Date.now(),
+        likes: 0,
+        likedByMe: false
+      });
+      savePosts(posts);
+      input.value = '';
+      renderArticle();
+    }
+
+    /* ========== 评论点赞 ========== */
+    function likeComment(postId, commentId) {
+      const { posts, post } = getPostForEdit(postId);
+      if (!post || !post.comments) return;
+      const comment = post.comments.find(c => c.id === commentId);
+      if (!comment) return;
+      comment.likedByMe = !comment.likedByMe;
+      comment.likes += comment.likedByMe ? 1 : -1;
+      savePosts(posts);
+      renderArticle();
+    }
+
+    /* ========== 显示回复输入区 ========== */
+    function showReplyInput(postId, commentId, author) {
+      // 先隐藏所有回复框
+      document.querySelectorAll('[id^="replyWrap_"]').forEach(el => el.style.display = 'none');
+      const wrap = document.getElementById('replyWrap_' + commentId);
+      if (wrap) {
+        wrap.style.display = 'flex';
+        document.getElementById('replyInput_' + commentId).focus();
+      }
+    }
+    function cancelReply(commentId) {
+      const wrap = document.getElementById('replyWrap_' + commentId);
+      if (wrap) wrap.style.display = 'none';
+    }
+
+    /* ========== 提交回复（以新评论形式追加） ========== */
+    function submitReply(postId, parentCommentId) {
+      const input = document.getElementById('replyInput_' + parentCommentId);
+      const content = input.value.trim();
+      if (!content) { alert('请输入回复内容'); return; }
+      const { posts, post } = getPostForEdit(postId);
+      if (!post || !post.comments) return;
+      const currentUser = UserModule.getCurrentUser() || '我';
+      const parent = post.comments.find(c => c.id === parentCommentId);
+      const prefix = parent ? '回复 @' + parent.author + '：' : '';
+      post.comments.push({
+        id: 'comment_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
+        author: currentUser,
+        content: prefix + content,
+        timestamp: Date.now(),
+        likes: 0,
+        likedByMe: false
+      });
+      savePosts(posts);
+      renderArticle();
+    }
+
+    /* ========== 删除评论（评论作者 或 楼主） ========== */
+    function deleteComment(postId, commentId) {
+      if (!confirm('确定要删除这条评论吗？')) return;
+      const { posts, post } = getPostForEdit(postId);
+      if (!post || !post.comments) return;
+      const comment = post.comments.find(c => c.id === commentId);
+      if (!comment) return;
+      const currentUser = UserModule.getCurrentUser();
+      const isCommentAuthor = currentUser && currentUser === comment.author;
+      const isPostAuthor = currentUser && currentUser === post.author;
+      if (!isCommentAuthor && !isPostAuthor) {
+        alert('只有评论作者或楼主才能删除');
+        return;
+      }
+      post.comments = post.comments.filter(c => c.id !== commentId);
+      savePosts(posts);
+      renderArticle();
+    }
+
+    /* ========== 工具函数 ========== */
+    function escHtml(s) {
+      if (!s) return '';
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function formatTime(ts) {
+      const d = new Date(ts);
+      const now = new Date();
+      const diff = (now - d) / 1000;
+      if (diff < 60) return '刚刚';
+      if (diff < 3600) return Math.floor(diff/60) + ' 分钟前';
+      if (diff < 86400) return Math.floor(diff/3600) + ' 小时前';
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+    }
+
+    renderArticle();
+  </script>
+  <script src="js/user.js"></script>
+</body>
+</html>

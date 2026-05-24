@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>互动社区 - 源养智助</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .community-hero {
+      background: linear-gradient(160deg, #1a4a2e 0%, #2d6a4f 100%);
+      padding: 80px 24px 40px;
+      text-align: center;
+      color: #fff;
+    }
+    .community-hero h2 { font-size: 28px; letter-spacing: 4px; margin-bottom: 8px; }
+    .community-hero p { color: rgba(255,255,255,0.75); font-size: 15px; }
+
+    .community-container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 24px 16px 100px;
+    }
+
+    /* 发布悬浮按钮 */
+    .fab-publish {
+      position: fixed;
+      bottom: 80px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1a4a2e, #2d6a4f);
+      color: #fff;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(45,106,79,0.45);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s;
+    }
+    .fab-publish:hover { transform: scale(1.1); }
+
+    /* 文章卡片 */
+    .post-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .post-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+    .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .post-avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: linear-gradient(135deg, #1a4a2e, #2d6a4f);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: 16px; flex-shrink: 0;
+    }
+    .post-author { font-weight: 700; color: #1a4a2e; font-size: 15px; }
+    .post-time { font-size: 12px; color: #aaa; }
+    .post-content { color: #333; font-size: 15px; line-height: 1.8; margin-bottom: 14px; }
+    .post-images { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .post-images img {
+      width: calc(33.333% - 6px);
+      max-width: 180px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .post-actions { display: flex; gap: 24px; }
+    .post-action-btn {
+      background: none; border: none; color: #999; font-size: 14px;
+      cursor: pointer; display: flex; align-items: center; gap: 6px;
+      padding: 4px 0; transition: color 0.2s;
+    }
+    .post-action-btn:hover { color: #2d6a4f; }
+    .post-action-btn.liked { color: #e74c3c; }
+    /* 帖子删除按钮（右下角） */
+    .post-delete-wrap {
+      position: absolute; bottom: 14px; right: 18px;
+    }
+    .post-delete-btn {
+      background: none; border: none; cursor: pointer; padding: 4px 8px;
+      border-radius: 6px; transition: background 0.2s;
+      display: flex; align-items: center; gap: 4px; color: #ccc; font-size: 12px;
+    }
+    .post-delete-btn:hover { background: rgba(231,76,60,0.08); color: #e74c3c; }
+    .post-card { position: relative; } /* 让删除按钮绝对定位相对于卡片 */
+
+    /* 发布弹窗 */
+    .publish-modal {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55); z-index: 200;
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .publish-modal.active { display: flex; }
+    .publish-box {
+      background: #fff; border-radius: 16px; padding: 28px 24px;
+      width: 100%; max-width: 500px; max-height: 85vh; overflow-y: auto;
+    }
+    .publish-box h3 { color: #1a4a2e; font-size: 20px; margin-bottom: 18px; text-align: center; }
+    .publish-box label { display: block; color: #555; font-size: 14px; margin-bottom: 6px; font-weight: 600; }
+    .publish-box textarea {
+      width: 100%; min-height: 120px; border: 1.5px solid #ddd; border-radius: 10px;
+      padding: 12px; font-size: 15px; resize: vertical; outline: none;
+      font-family: inherit; box-sizing: border-box;
+    }
+    .publish-box textarea:focus { border-color: #2d6a4f; }
+    .publish-img-preview { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .publish-img-preview img {
+      width: 80px; height: 80px; object-fit: cover; border-radius: 8px; position: relative;
+    }
+    .publish-img-preview .img-remove {
+      position: absolute; margin-left: -20px; margin-top: -4px;
+      background: rgba(0,0,0,0.6); color: #fff; border: none;
+      border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer;
+    }
+    .publish-add-img {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: #2d6a4f; font-size: 14px; cursor: pointer;
+      margin-top: 10px; padding: 8px 14px; border: 1.5px dashed #2d6a4f;
+      border-radius: 10px; background: none;
+    }
+    .publish-btns { display: flex; gap: 12px; margin-top: 20px; justify-content: center; }
+    .publish-confirm {
+      background: linear-gradient(135deg, #1a4a2e, #2d6a4f); color: #fff;
+      border: none; padding: 12px 36px; border-radius: 50px;
+      font-size: 15px; font-weight: 700; cursor: pointer; letter-spacing: 2px;
+    }
+    .publish-cancel {
+      background: transparent; border: 1.5px solid #ccc; color: #888;
+      padding: 12px 28px; border-radius: 50px; font-size: 14px; cursor: pointer;
+    }
+
+    .empty-community {
+      text-align: center; padding: 60px 20px; color: #aaa; font-size: 15px;
+    }
+    .empty-community .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+
+  <!-- 导航栏 -->
+  <nav class="navbar scrolled">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/jiqiren.png" class="logo-img" alt="logo" />
+        <span class="logo-text">源养智助</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link"><img src="assets/shouye.png" class="nav-icon" alt="首页" />首页</a>
+        <a href="products.html" class="nav-link"><img src="assets/caoyao.png" class="nav-icon" alt="产品" />产品介绍</a>
+        <a href="community.html" class="nav-link active"><img src="assets/hudong.png" class="nav-icon" alt="社区" />互动社区</a>
+        <a href="ai.html" class="nav-link"><img src="assets/jiqiren.png" class="nav-icon" alt="AI" />AI助手</a>
+        <a href="quiz.html" class="nav-link"><img src="assets/yufang.png" class="nav-icon" alt="测评" />体质测评</a>
+        <a href="about.html" class="nav-link"><img src="assets/yonghu.png" class="nav-icon" alt="关于" />关于我们</a>
+        <a href="feedback.html" class="nav-link"><img src="assets/pinglun.png" class="nav-icon" alt="反馈" />用户反馈</a>
+        <a href="download.html" class="nav-link nav-download">下载App</a>
+        <button id="navAvatarBtn" onclick="UserModule.openModal()" style="
+          width:38px;height:38px;border-radius:50%;border:2px solid #ddd;
+          background:#f5f5f5;cursor:pointer;display:flex;align-items:center;justify-content:center;
+          overflow:hidden;flex-shrink:0;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#2d6a4f'" onmouseout="this.style.borderColor='#ddd'">
+          <img src="assets/yonghu.png" style="width:20px;height:20px;opacity:0.7;">
+        </button>
+      </div>
+      <div class="nav-hamburger" id="navHamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+    </div>
+  </nav>
+
+  <!-- 互动社区内容 -->
+  <section style="padding-top: 100px;">
+
+  <!-- 文章流 -->
+  <div class="community-container" id="postList">
+    <!-- 由 JS 动态渲染 -->
+  </div>
+
+  <!-- 悬浮发布按钮 -->
+  <button class="fab-publish" onclick="openPublish()" title="发布文章">＋</button>
+
+  <!-- 发布弹窗 -->
+  <div class="publish-modal" id="publishModal">
+    <div class="publish-box">
+      <h3>发布文章</h3>
+      <label>内容</label>
+      <textarea id="publishContent" placeholder="分享你的养生心得…" maxlength="2000"></textarea>
+      <label style="margin-top:16px;">图片（可选，最多9张）</label>
+      <div class="publish-img-preview" id="imgPreview"></div>
+      <button class="publish-add-img" onclick="document.getElementById('imgInput').click()">
+        ＋ 添加图片
+      </button>
+      <input type="file" id="imgInput" accept="image/*" multiple hidden onchange="handleImgUpload(event)" />
+      <div class="publish-btns">
+        <button class="publish-cancel" onclick="closePublish()">取消</button>
+        <button class="publish-confirm" onclick="submitPost()">发布</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <div class="footer-brand">
+      <img src="assets/jiqiren.png" class="footer-logo" alt="Logo" />
+      <span>源养智助</span>
+    </div>
+    <p class="footer-desc">AI 体质测评 × 药食同源 · 智慧养生平台</p>
+    <p class="footer-copy">© 2026 源养智助 · 互联网养生新范式</p>
+  </footer>
+
+  <script>
+    /* ========== 数据层 ========== */
+    const STORAGE_KEY = 'yyzs_community_posts';
+
+    function loadPosts() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+      catch { return []; }
+    }
+    function savePosts(posts) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+    }
+
+    /* 预置第一篇文章 */
+    function ensureDefaultPost() {
+      const posts = loadPosts();
+      if (posts.length === 0) {
+        posts.push({
+          id: 'post_1',
+          author: '楼主',
+          avatarText: '楼',
+          content: '欢迎来到源养智助互动社区！这里是分享养生心得、交流健康生活的地方。\n\n我们可以在这里：\n• 分享每天的养生小技巧\n• 交流体质调理的经验\n• 晒出使用产品后的变化\n• 向 AI 助手提问后的收获\n\n让我们一起，用科技传承中医智慧，用社区连接健康生活 🌿',
+          images: [],
+          timestamp: Date.now(),
+          likes: 18,
+          likedByMe: false,
+          comments: [
+            { id:'comment_1', author: '小明', content: '太好了，终于有一个专业的养生社区了！', timestamp: Date.now() - 3600000, likes:2, likedByMe:false },
+            { id:'comment_2', author: '养生达人', content: '期待在这里学到更多中医养生知识～', timestamp: Date.now() - 1800000, likes:1, likedByMe:false }
+          ]
+        });
+        savePosts(posts);
+      }
+    }
+
+    /* ========== 渲染 ========== */
+    function renderPosts() {
+      const list = document.getElementById('postList');
+      const posts = loadPosts();
+      // 兼容 user.js 还未加载完的情况
+      const currentUser = (typeof UserModule !== 'undefined' && UserModule.getCurrentUser)
+        ? UserModule.getCurrentUser() : null;
+      if (posts.length === 0) {
+        list.innerHTML = `
+          <div class="empty-community">
+            <div class="empty-icon">📝</div>
+            <p>还没有文章，点击右下角 ＋ 发布第一篇文章吧！</p>
+          </div>`;
+        return;
+      }
+      list.innerHTML = posts.map(post => {
+        // 只要是已登录用户发的帖（用户名相同），或发帖时未登录记的"我"，都显示删除按钮
+        const isAuthor = currentUser
+          ? (currentUser === post.author || post.author === '我')
+          : post.author === '我';
+        return `
+        <div class="post-card" onclick="openArticle('${post.id}')">
+          <div class="post-header">
+            <div class="post-avatar">${post.avatarText || post.author[0]}</div>
+            <div>
+              <div class="post-author">${escHtml(post.author)}</div>
+              <div class="post-time">${formatTime(post.timestamp)}</div>
+            </div>
+          </div>
+          <div class="post-content">${escHtml(post.content).replace(/\n/g, '<br>')}</div>
+          ${post.images && post.images.length > 0 ? `
+            <div class="post-images">
+              ${post.images.map(img => `<img src="${img}" alt="配图" onclick="event.stopPropagation();window.open('${img}','_blank')" />`).join('')}
+            </div>` : ''}
+          <div class="post-actions" onclick="event.stopPropagation()">
+            <button class="post-action-btn ${post.likedByMe ? 'liked' : ''}" onclick="toggleLike('${post.id}')">
+              ${post.likedByMe ? '❤️' : '🤍'} ${post.likes}
+            </button>
+            <button class="post-action-btn" onclick="openArticle('${post.id}')">
+              💬 ${post.comments ? post.comments.length : 0}
+            </button>
+          </div>
+          ${isAuthor ? `
+          <div class="post-delete-wrap">
+            <button class="post-delete-btn" onclick="deletePost('${post.id}')" title="删除文章">
+              <img src="assets/shanchu.png" style="width:16px;height:16px;opacity:0.6;" />
+            </button>
+          </div>` : ''}
+        </div>`;
+      }).join('');
+    }
+
+    /* ========== 点赞 ========== */
+    function toggleLike(postId) {
+      const posts = loadPosts();
+      const post = posts.find(p => p.id === postId);
+      if (!post) return;
+      post.likedByMe = !post.likedByMe;
+      post.likes += post.likedByMe ? 1 : -1;
+      savePosts(posts);
+      renderPosts();
+    }
+
+    /* ========== 删除文章（仅作者） ========== */
+    function deletePost(postId) {
+      if (!confirm('确定要删除这篇文章吗？删除后不可恢复。')) return;
+      const posts = loadPosts();
+      const idx = posts.findIndex(p => p.id === postId);
+      if (idx === -1) return;
+      const currentUser = UserModule.getCurrentUser();
+      if (!currentUser || currentUser !== posts[idx].author) {
+        alert('只有作者才能删除文章');
+        return;
+      }
+      posts.splice(idx, 1);
+      savePosts(posts);
+      renderPosts();
+    }
+
+    /* ========== 发布文章 ========== */
+    let tempImgDataUrls = [];
+
+    function openPublish() {
+      document.getElementById('publishContent').value = '';
+      document.getElementById('imgPreview').innerHTML = '';
+      tempImgDataUrls = [];
+      document.getElementById('publishModal').classList.add('active');
+    }
+    function closePublish() {
+      document.getElementById('publishModal').classList.remove('active');
+      tempImgDataUrls = [];
+    }
+
+    function handleImgUpload(e) {
+      const files = Array.from(e.target.files);
+      if (tempImgDataUrls.length + files.length > 9) {
+        alert('最多只能上传 9 张图片');
+        return;
+      }
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          tempImgDataUrls.push(ev.target.result);
+          renderImgPreview();
+        };
+        reader.readAsDataURL(file);
+      });
+      e.target.value = '';
+    }
+
+    function renderImgPreview() {
+      const wrap = document.getElementById('imgPreview');
+      wrap.innerHTML = tempImgDataUrls.map((img, i) => `
+        <div style="position:relative;display:inline-block;">
+          <img src="${img}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;" />
+          <button class="img-remove" onclick="removeImg(${i})" style="
+            position:absolute;top:-6px;right:-6px;
+            background:rgba(0,0,0,0.6);color:#fff;border:none;
+            border-radius:50%;width:20px;height:20px;font-size:12px;cursor:pointer;
+          ">✕</button>
+        </div>`).join('');
+    }
+
+    function removeImg(index) {
+      tempImgDataUrls.splice(index, 1);
+      renderImgPreview();
+    }
+
+    function submitPost() {
+      const content = document.getElementById('publishContent').value.trim();
+      if (!content) { alert('请输入文章内容'); return; }
+      const currentUser = (typeof UserModule !== 'undefined' && UserModule.getCurrentUser)
+        ? UserModule.getCurrentUser() : null;
+      if (!currentUser) {
+        alert('请先登录后再发布文章');
+        UserModule.openModal();
+        return;
+      }
+      const posts = loadPosts();
+      posts.unshift({
+        id: 'post_' + Date.now(),
+        author: currentUser,
+        avatarText: currentUser[0],
+        content: content,
+        images: [...tempImgDataUrls],
+        timestamp: Date.now(),
+        likes: 0,
+        likedByMe: false,
+        comments: []
+      });
+      savePosts(posts);
+      closePublish();
+      renderPosts();
+    }
+
+    /* ========== 跳转文章详情 ========== */
+    function openArticle(postId) {
+      location.href = 'article.html?id=' + encodeURIComponent(postId);
+    }
+
+    /* ========== 工具函数 ========== */
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function formatTime(ts) {
+      const d = new Date(ts);
+      const now = new Date();
+      const diff = (now - d) / 1000;
+      if (diff < 60) return '刚刚';
+      if (diff < 3600) return Math.floor(diff/60) + ' 分钟前';
+      if (diff < 86400) return Math.floor(diff/3600) + ' 小时前';
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    }
+
+    /* ========== 初始化 ========== */
+    function init() {
+      ensureDefaultPost();
+      renderPosts();
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+  <script src="js/user.js"></script>
+</body>
+</html>

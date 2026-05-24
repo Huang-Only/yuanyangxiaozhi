@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>产品介绍 - 源养智助</title>
+  <meta name="description" content="源养智助产品介绍：熬夜膏、折耳根膏、茯苓黄姜膏，贵州道地药材，AI定制养生方案。" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ========== 顶部导航栏 ========== -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/jiqiren.png" class="logo-img" alt="logo" />
+        <span class="logo-text">源养智助</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">
+          <img src="assets/shouye.png" class="nav-icon" alt="首页" />首页
+        </a>
+        <a href="products.html" class="nav-link active">
+          <img src="assets/caoyao.png" class="nav-icon" alt="产品" />产品介绍
+        </a>
+        <a href="community.html" class="nav-link">
+          <img src="assets/hudong.png" class="nav-icon" alt="社区" />互动社区
+        </a>
+        <a href="ai.html" class="nav-link">
+          <img src="assets/jiqiren.png" class="nav-icon" alt="AI" />AI助手
+        </a>
+        <a href="quiz.html" class="nav-link">
+          <img src="assets/yufang.png" class="nav-icon" alt="测评" />体质测评
+        </a>
+        <a href="about.html" class="nav-link">
+          <img src="assets/yonghu.png" class="nav-icon" alt="关于" />关于我们
+        </a>
+        <a href="feedback.html" class="nav-link">
+          <img src="assets/pinglun.png" class="nav-icon" alt="反馈" />用户反馈
+        </a>
+        <a href="download.html" class="nav-link nav-download">
+          下载App
+        </a>
+        <button id="navAvatarBtn" onclick="UserModule.openModal()" style="
+          width:38px;height:38px;border-radius:50%;border:2px solid #ddd;
+          background:#f5f5f5;cursor:pointer;display:flex;align-items:center;justify-content:center;
+          overflow:hidden;flex-shrink:0;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#2d6a4f'" onmouseout="this.style.borderColor='#ddd'">
+          <img src="assets/yonghu.png" style="width:20px;height:20px;opacity:0.7;">
+        </button>
+      </div>
+      <div class="nav-hamburger" id="navHamburger" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ========== 产品介绍内容 ========== -->
+  <section class="section" style="padding-top: 120px;">
+    <div class="section-container">
+      <h2 class="section-title">产品介绍</h2>
+      <p class="section-desc">精选贵州道地药材，结合AI体质测评，为您提供个性化养生方案</p>
+      <div class="products-grid">
+
+        <div class="product-card">
+          <img src="assets/icon_yangshengcha.png" class="product-img" alt="熬夜膏" />
+          <h3 class="product-name">熬夜膏</h3>
+          <p class="product-desc">针对熬夜人群，滋阴降火，缓解疲劳，恢复精力。采用贵州本地中药材精心熬制，适合工作压力大、作息不规律的人群。</p>
+          <div class="product-tags">
+            <span class="tag">熬夜必备</span>
+            <span class="tag">滋阴降火</span>
+            <span class="tag">恢复精力</span>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <img src="assets/caoyao.png" class="product-img" alt="折耳根膏" />
+          <h3 class="product-name">折耳根膏</h3>
+          <p class="product-desc">贵州特色折耳根精华，清热解毒，增强免疫，天然草本力量。折耳根（鱼腥草）是贵州传统药材，具有极高的药用价值。</p>
+          <div class="product-tags">
+            <span class="tag">清热解毒</span>
+            <span class="tag">贵州特产</span>
+            <span class="tag">增强免疫</span>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <img src="assets/icon_yangshengcha.png" class="product-img" alt="茯苓黄姜膏" />
+          <h3 class="product-name">茯苓黄姜膏</h3>
+          <p class="product-desc">健脾祛湿，温中散寒，适合体虚湿重人群，温养调理。茯苓与黄姜的完美结合，温和调理脾胃虚寒。</p>
+          <div class="product-tags">
+            <span class="tag">健脾祛湿</span>
+            <span class="tag">温中散寒</span>
+            <span class="tag">温养调理</span>
+          </div>
+        </div>
+
+        <div class="product-card product-card-highlight">
+          <img src="assets/jiqiren.png" class="product-img" alt="AI定制" />
+          <h3 class="product-name">AI定制方案</h3>
+          <p class="product-desc">通过AI体质测评，精准匹配您的体质类型，推荐最适合的养生产品与方案。科技赋能传统养生，让调理更精准有效。</p>
+          <div class="product-tags">
+            <span class="tag">AI测评</span>
+            <span class="tag">精准匹配</span>
+            <span class="tag">个性方案</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 页脚 ========== -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <img src="assets/jiqiren.png" class="footer-logo-img" alt="源养智助" />
+        <span class="logo-text">源养智助</span>
+        <p>AI体质测评 · 药食同源 · 智慧养生</p>
+      </div>
+      <div class="footer-links">
+        <a href="index.html">首页</a>
+        <a href="products.html">产品</a>
+        <a href="ai.html">AI助手</a>
+        <a href="quiz.html">体质测评</a>
+        <a href="about.html">关于</a>
+      </div>
+      <div class="footer-copy">
+        © 2026 源养智助 · 基于AI体质测评的药食同源智慧养生平台
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/user.js"></script>
+</body>
+</html>
+

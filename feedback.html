@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>用户反馈 - 源养智助</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ===== 导航栏（内联确保加载） ===== */
+    .navbar {
+      position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 36px;
+      background: rgba(255,255,255,0.97);
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+      transition: background 0.3s;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #1a4a2e; font-weight: 700; font-size: 18px; }
+    .nav-logo-icon { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; }
+    .nav-links { display: flex; align-items: center; gap: 6px; }
+    .nav-link {
+      display: flex; align-items: center; gap: 5px;
+      padding: 8px 14px; border-radius: 8px;
+      font-size: 14px; color: #444; text-decoration: none;
+      transition: all 0.2s; white-space: nowrap;
+    }
+    .nav-link:hover { background: rgba(45,106,79,0.08); color: #1a4a2e; }
+    .nav-link.active { background: rgba(45,106,79,0.12); color: #1a4a2e; font-weight: 700; }
+    .nav-icon { width: 18px; height: 18px; object-fit: contain; }
+    .nav-download { background: linear-gradient(135deg,#1a4a2e,#2d6a4f); color: #fff !important; font-weight: 600; }
+    .nav-download:hover { opacity: 0.9; }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .nav-hamburger span { display: block; width: 24px; height: 2.5px; background: #333; border-radius: 2px; }
+    @media (max-width: 900px) {
+      .nav-links { display: none; flex-direction: column; position: absolute;
+        top: 64px; left: 0; width: 100%; background: #fff;
+        box-shadow: 0 12px 32px rgba(0,0,0,0.1); padding: 16px 0; gap: 0; }
+      .nav-links.open { display: flex; }
+      .nav-link { padding: 14px 24px; border-radius: 0; }
+      .nav-hamburger { display: flex; }
+    }
+  </style>
+  <style>
+    /* ===== 页面顶部 ===== */
+    .feedback-hero {
+      background: linear-gradient(160deg, #1a4a2e 0%, #2d6a4f 100%);
+      padding: 120px 24px 48px;
+      text-align: center;
+      color: #fff;
+    }
+    .feedback-hero h2 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      margin-bottom: 10px;
+    }
+    .feedback-hero p {
+      color: rgba(255,255,255,0.75);
+      font-size: 15px;
+    }
+
+    /* ===== 统计栏 ===== */
+    .feedback-stats {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+      background: #fff;
+      padding: 24px 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .stat-item { text-align: center; }
+    .stat-num { font-size: 28px; font-weight: 800; color: #1a4a2e; }
+    .stat-label { font-size: 13px; color: #999; margin-top: 2px; }
+
+    /* ===== 主体容器 ===== */
+    .feedback-main {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 36px 20px 100px;
+    }
+
+    /* ===== 筛选栏 ===== */
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+    .filter-btn {
+      padding: 6px 18px;
+      border-radius: 20px;
+      border: 1.5px solid #ddd;
+      background: #fff;
+      font-size: 13px;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      border-color: #2d6a4f;
+      color: #1a4a2e;
+      background: rgba(45,106,79,0.08);
+      font-weight: 600;
+    }
+
+    /* ===== 反馈卡片 ===== */
+    .feedback-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 22px 22px 18px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      border-left: 4px solid transparent;
+      transition: box-shadow 0.2s;
+    }
+    .feedback-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+    .feedback-card.type-bug   { border-left-color: #e74c3c; }
+    .feedback-card.type-sugg  { border-left-color: #2d6a4f; }
+    .feedback-card.type-praise{ border-left-color: #f39c12; }
+    .feedback-card.type-question { border-left-color: #3498db; }
+
+    .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .card-avatar {
+      width: 46px; height: 46px; border-radius: 50%;
+      object-fit: cover; flex-shrink: 0;
+      border: 2px solid #eee;
+    }
+    .card-user-info { flex: 1; }
+    .card-username { font-weight: 700; color: #1a4a2e; font-size: 15px; }
+    .card-meta { font-size: 12px; color: #aaa; margin-top: 2px; }
+    .card-tag {
+      font-size: 12px; padding: 3px 10px; border-radius: 12px;
+      font-weight: 600; flex-shrink: 0;
+    }
+    .tag-bug     { background: rgba(231,76,60,0.1);  color: #e74c3c; }
+    .tag-sugg    { background: rgba(45,106,79,0.1);  color: #2d6a4f; }
+    .tag-praise  { background: rgba(243,156,18,0.1); color: #f39c12; }
+    .tag-question{ background: rgba(52,152,219,0.1); color: #3498db; }
+
+    .card-content {
+      color: #333; font-size: 15px; line-height: 1.8;
+      margin-bottom: 14px; padding: 12px 14px;
+      background: #f9f9f9; border-radius: 10px;
+    }
+    .card-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .card-rating { display: flex; gap: 3px; }
+    .star { font-size: 16px; color: #ddd; }
+    .star.filled { color: #f39c12; }
+
+    /* 官方回复 */
+    .official-reply {
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: rgba(45,106,79,0.06);
+      border: 1px solid rgba(45,106,79,0.18);
+      border-radius: 10px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .reply-badge {
+      background: linear-gradient(135deg, #1a4a2e, #2d6a4f);
+      color: #fff; font-size: 11px; padding: 2px 8px;
+      border-radius: 10px; flex-shrink: 0; margin-top: 2px; white-space: nowrap;
+    }
+    .reply-text { color: #2d6a4f; font-size: 14px; line-height: 1.7; }
+
+    /* 状态标签 */
+    .status-badge {
+      font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600;
+    }
+    .status-resolved { background: rgba(45,106,79,0.12); color: #2d6a4f; }
+    .status-processing { background: rgba(243,156,18,0.12); color: #e67e22; }
+    .status-pending { background: rgba(150,150,150,0.12); color: #888; }
+
+    /* ===== 提交反馈表单 ===== */
+    .submit-section {
+      margin-top: 40px;
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .submit-section h3 {
+      color: #1a4a2e; font-size: 20px; margin-bottom: 6px; font-weight: 700;
+    }
+    .submit-section .sub-desc {
+      color: #999; font-size: 14px; margin-bottom: 22px;
+    }
+    .form-row { margin-bottom: 16px; }
+    .form-row label {
+      display: block; color: #555; font-size: 14px;
+      margin-bottom: 6px; font-weight: 600;
+    }
+    .form-row input, .form-row textarea, .form-row select {
+      width: 100%; padding: 10px 14px; border: 1.5px solid #ddd;
+      border-radius: 10px; font-size: 14px; outline: none;
+      font-family: inherit; box-sizing: border-box; transition: border-color 0.2s;
+    }
+    .form-row input:focus, .form-row textarea:focus, .form-row select:focus {
+      border-color: #2d6a4f;
+    }
+    .form-row textarea { min-height: 100px; resize: vertical; }
+    .form-row-2 { display: flex; gap: 14px; }
+    .form-row-2 .form-row { flex: 1; }
+
+    /* 星级评分 */
+    .star-rating { display: flex; gap: 6px; margin-top: 4px; }
+    .star-rating .s {
+      font-size: 28px; color: #ddd; cursor: pointer; transition: color 0.15s;
+    }
+    .star-rating .s.active { color: #f39c12; }
+    .star-rating .s:hover { color: #f39c12; }
+
+    .submit-btn {
+      background: linear-gradient(135deg, #1a4a2e, #2d6a4f);
+      color: #fff; border: none; padding: 14px 48px;
+      border-radius: 50px; font-size: 16px; font-weight: 700;
+      cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+      letter-spacing: 3px; margin-top: 8px;
+    }
+    .submit-btn:hover { transform: scale(1.04); box-shadow: 0 8px 24px rgba(45,106,79,0.4); }
+
+    /* 成功提示 */
+    .success-toast {
+      display: none; position: fixed; bottom: 100px; left: 50%;
+      transform: translateX(-50%);
+      background: #2d6a4f; color: #fff; padding: 12px 28px;
+      border-radius: 50px; font-size: 14px; z-index: 999;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
+    .success-toast.show { display: block; animation: fadeInUp 0.3s ease; }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* 分区标题 */
+    .section-label {
+      font-size: 18px; color: #1a4a2e; font-weight: 700;
+      margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+    }
+    .section-label::after {
+      content: ''; flex: 1; height: 1px; background: #eee;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 导航栏 -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/jiqiren.png" class="logo-img" alt="logo" />
+        <span class="logo-text">源养智助</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link"><img src="assets/shouye.png" class="nav-icon" alt="首页" />首页</a>
+        <a href="products.html" class="nav-link"><img src="assets/caoyao.png" class="nav-icon" alt="产品" />产品介绍</a>
+        <a href="community.html" class="nav-link"><img src="assets/hudong.png" class="nav-icon" alt="社区" />互动社区</a>
+        <a href="ai.html" class="nav-link"><img src="assets/jiqiren.png" class="nav-icon" alt="AI" />AI助手</a>
+        <a href="quiz.html" class="nav-link"><img src="assets/yufang.png" class="nav-icon" alt="测评" />体质测评</a>
+        <a href="about.html" class="nav-link"><img src="assets/yonghu.png" class="nav-icon" alt="关于" />关于我们</a>
+        <a href="feedback.html" class="nav-link active"><img src="assets/pinglun.png" class="nav-icon" alt="反馈" />用户反馈</a>
+        <a href="download.html" class="nav-link nav-download">下载App</a>
+        <!-- 用户头像按钮 -->
+        <button id="navAvatarBtn" onclick="UserModule.openModal()" style="
+          width:38px;height:38px;border-radius:50%;border:2px solid #ddd;
+          background:#f5f5f5;cursor:pointer;display:flex;align-items:center;justify-content:center;
+          overflow:hidden;flex-shrink:0;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#2d6a4f'" onmouseout="this.style.borderColor='#ddd'">
+          <img src="assets/yonghu.png" style="width:20px;height:20px;opacity:0.7;">
+        </button>
+      </div>
+      <div class="nav-hamburger" id="navHamburger" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 顶部 -->
+  <section class="feedback-hero">
+    <h2>用户反馈</h2>
+    <p>您的每一条反馈都是我们进步的动力</p>
+  </section>
+
+  <!-- 统计 -->
+  <div class="feedback-stats">
+    <div class="stat-item"><div class="stat-num">128</div><div class="stat-label">收到反馈</div></div>
+    <div class="stat-item"><div class="stat-num">96%</div><div class="stat-label">好评率</div></div>
+    <div class="stat-item"><div class="stat-num">2h</div><div class="stat-label">平均响应</div></div>
+    <div class="stat-item"><div class="stat-num">113</div><div class="stat-label">已处理</div></div>
+  </div>
+
+  <div class="feedback-main">
+
+    <!-- 筛选 -->
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterCards('all', this)">全部</button>
+      <button class="filter-btn" onclick="filterCards('bug', this)">🐛 问题反馈</button>
+      <button class="filter-btn" onclick="filterCards('sugg', this)">💡 功能建议</button>
+      <button class="filter-btn" onclick="filterCards('praise', this)">⭐ 好评</button>
+      <button class="filter-btn" onclick="filterCards('question', this)">❓ 使用疑问</button>
+    </div>
+
+    <!-- 反馈列表 -->
+    <div class="section-label">近期反馈</div>
+    <div id="feedbackList">
+
+      <!-- 卡片1 -->
+      <div class="feedback-card type-bug" data-type="bug">
+        <div class="card-header">
+          <img src="assets/avatar4.jpg" class="card-avatar" alt="头像" />
+          <div class="card-user-info">
+            <div class="card-username">夜雨寒星</div>
+            <div class="card-meta">2026-05-08 · 来自 iOS</div>
+          </div>
+          <span class="card-tag tag-bug">🐛 问题</span>
+        </div>
+        <div class="card-content">
+          AI助手有时候回复会卡很久，等了差不多两分钟才出来结果，不知道是网络问题还是服务器的问题。另外体质测评做完之后返回按钮点了没反应，需要手动滑回去。
+        </div>
+        <div class="card-footer">
+          <div class="card-rating">
+            <span class="star filled">★</span><span class="star filled">★</span>
+            <span class="star filled">★</span><span class="star">★</span><span class="star">★</span>
+          </div>
+          <span class="status-badge status-processing">处理中</span>
+        </div>
+        <div class="official-reply">
+          <span class="reply-badge">官方回复</span>
+          <div class="reply-text">您好，感谢反馈！AI响应延迟问题已记录，我们正在优化服务器并发能力，预计下个版本改善。返回按钮的问题也已复现，会在下次更新中修复，请稍候 🙏</div>
+        </div>
+      </div>
+
+      <!-- 卡片2 -->
+      <div class="feedback-card type-praise" data-type="praise">
+        <div class="card-header">
+          <img src="assets/avatar1.jpg" class="card-avatar" alt="头像" />
+          <div class="card-user-info">
+            <div class="card-username">清荷淡雅</div>
+            <div class="card-meta">2026-05-07 · 来自 Android</div>
+          </div>
+          <span class="card-tag tag-praise">⭐ 好评</span>
+        </div>
+        <div class="card-content">
+          体质测评真的很准！我测出来是阴虚体质，AI推荐的折耳根膏我买来试了一段时间，确实感觉口干的情况好很多了。界面也很好看，绿色系的配色看着很舒服，感觉在用的时候心情都变好了。
+        </div>
+        <div class="card-footer">
+          <div class="card-rating">
+            <span class="star filled">★</span><span class="star filled">★</span>
+            <span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span>
+          </div>
+          <span class="status-badge status-resolved">已回复</span>
+        </div>
+        <div class="official-reply">
+          <span class="reply-badge">官方回复</span>
+          <div class="reply-text">非常感谢您的支持和认可！您的好评是我们最大的动力 🌿 折耳根膏确实对阴虚体质有很好的调理效果，后续我们也会不断优化推荐精准度，期待继续为您服务！</div>
+        </div>
+      </div>
+
+      <!-- 卡片3 -->
+      <div class="feedback-card type-sugg" data-type="sugg">
+        <div class="card-header">
+          <img src="assets/avatar2.jpg" class="card-avatar" alt="头像" />
+          <div class="card-user-info">
+            <div class="card-username">小鹿乱撞呀</div>
+            <div class="card-meta">2026-05-06 · 来自 微信小程序</div>
+          </div>
+          <span class="card-tag tag-sugg">💡 建议</span>
+        </div>
+        <div class="card-content">
+          建议加一个每日养生提醒的功能，就像喝水提醒那种，根据我的体质每天给我推送一条养生小知识或者提醒我该喝哪个膏了。另外如果能加一个养生日记的功能就更好了，方便记录每天身体的变化。
+        </div>
+        <div class="card-footer">
+          <div class="card-rating">
+            <span class="star filled">★</span><span class="star filled">★</span>
+            <span class="star filled">★</span><span class="star filled">★</span><span class="star">★</span>
+          </div>
+          <span class="status-badge status-processing">规划中</span>
+        </div>
+        <div class="official-reply">
+          <span class="reply-badge">官方回复</span>
+          <div class="reply-text">超棒的想法！每日养生提醒和养生日记都已加入我们的产品路线图 📝 每日提醒功能预计在 2.0 版本上线，养生日记正在设计中，敬请期待！您的建议非常有参考价值～</div>
+        </div>
+      </div>
+
+      <!-- 卡片4 -->
+      <div class="feedback-card type-question" data-type="question">
+        <div class="card-header">
+          <img src="assets/avatar3.jpg" class="card-avatar" alt="头像" />
+          <div class="card-user-info">
+            <div class="card-username">岁月如歌丶</div>
+            <div class="card-meta">2026-05-05 · 来自 网页端</div>
+          </div>
+          <span class="card-tag tag-question">❓ 疑问</span>
+        </div>
+        <div class="card-content">
+          想问一下，我测评出来是痰湿体质，但是AI助手给我推荐了熬夜膏，我晚上睡得很好呀，不怎么熬夜的，这个推荐是根据什么逻辑来的？还有就是产品页面里的价格和实际购买页面不一样，差了十几块钱，有点奇怪。
+        </div>
+        <div class="card-footer">
+          <div class="card-rating">
+            <span class="star filled">★</span><span class="star filled">★</span>
+            <span class="star filled">★</span><span class="star">★</span><span class="star">★</span>
+          </div>
+          <span class="status-badge status-resolved">已解答</span>
+        </div>
+        <div class="official-reply">
+          <span class="reply-badge">官方回复</span>
+          <div class="reply-text">您好！熬夜膏除了改善熬夜问题，其中的茯苓、薏仁成分对痰湿体质也有化痰祛湿的效果，所以会作为推荐选项之一。关于价格差异，感谢您的发现！这是我们数据同步的 bug，已经修复，非常抱歉给您带来困扰 🙏</div>
+        </div>
+      </div>
+
+      <!-- 卡片5 -->
+      <div class="feedback-card type-bug" data-type="bug">
+        <div class="card-header">
+          <img src="assets/avatar2.jpg" class="card-avatar" alt="头像" />
+          <div class="card-user-info">
+            <div class="card-username">小鹿乱撞呀</div>
+            <div class="card-meta">2026-05-03 · 来自 Android</div>
+          </div>
+          <span class="card-tag tag-bug">🐛 问题</span>
+        </div>
+        <div class="card-content">
+          安卓端打开互动社区的时候，有时候图片加载不出来，显示一个白色方块。而且我发了一条带三张图的帖子，刷新之后图片全没了，只剩文字。这个bug很影响体验，希望尽快修复。
+        </div>
+        <div class="card-footer">
+          <div class="card-rating">
+            <span class="star filled">★</span><span class="star filled">★</span>
+            <span class="star filled">★</span><span class="star">★</span><span class="star">★</span>
+          </div>
+          <span class="status-badge status-resolved">已修复</span>
+        </div>
+        <div class="official-reply">
+          <span class="reply-badge">官方回复</span>
+          <div class="reply-text">非常抱歉影响了您的使用体验！图片存储的问题已在 v1.2.1 版本中修复，数据迁移至云存储服务，刷新丢失问题已解决。感谢您的耐心等待，更新后请告知效果如何 ✨</div>
+        </div>
+      </div>
+
+      <!-- 卡片6 -->
+      <div class="feedback-card type-sugg" data-type="sugg">
+        <div class="card-header">
+          <img src="assets/avatar1.jpg" class="card-avatar" alt="头像" />
+          <div class="card-user-info">
+            <div class="card-username">清荷淡雅</div>
+            <div class="card-meta">2026-04-28 · 来自 iOS</div>
+          </div>
+          <span class="card-tag tag-sugg">💡 建议</span>
+        </div>
+        <div class="card-content">
+          希望AI助手可以支持语音输入，有时候打字不方便，直接说话会很方便。另外希望可以记住我上次的对话记录，每次进来都要重新介绍自己的体质感觉有点麻烦。
+        </div>
+        <div class="card-footer">
+          <div class="card-rating">
+            <span class="star filled">★</span><span class="star filled">★</span>
+            <span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span>
+          </div>
+          <span class="status-badge status-processing">规划中</span>
+        </div>
+        <div class="official-reply">
+          <span class="reply-badge">官方回复</span>
+          <div class="reply-text">语音输入和对话记忆功能都在我们的开发计划里！对话历史记录功能预计在下个版本上线，语音输入需要时间打磨，会在后续版本支持。非常感谢您的建议 💪</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 提交反馈表单 -->
+    <div class="submit-section" id="submitForm">
+      <h3>💬 提交您的反馈</h3>
+      <p class="sub-desc">遇到问题、有好的想法、或者想夸夸我们？都欢迎告诉我们</p>
+
+      <div class="form-row-2">
+        <div class="form-row">
+          <label>昵称</label>
+          <input type="text" id="fbName" placeholder="您的昵称（可匿名）" />
+        </div>
+        <div class="form-row">
+          <label>反馈类型</label>
+          <select id="fbType">
+            <option value="">请选择类型</option>
+            <option value="bug">🐛 问题反馈</option>
+            <option value="sugg">💡 功能建议</option>
+            <option value="praise">⭐ 产品好评</option>
+            <option value="question">❓ 使用疑问</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label>反馈内容</label>
+        <textarea id="fbContent" placeholder="请详细描述您的问题或建议，越详细越能帮助我们改进…" maxlength="500"></textarea>
+      </div>
+
+      <div class="form-row">
+        <label>体验评分</label>
+        <div class="star-rating" id="starRating">
+          <span class="s" onclick="setRating(1)">★</span>
+          <span class="s" onclick="setRating(2)">★</span>
+          <span class="s" onclick="setRating(3)">★</span>
+          <span class="s" onclick="setRating(4)">★</span>
+          <span class="s" onclick="setRating(5)">★</span>
+        </div>
+      </div>
+
+      <button class="submit-btn" onclick="submitFeedback()">提 交 反 馈</button>
+    </div>
+
+  </div>
+
+  <!-- 成功提示 -->
+  <div class="success-toast" id="successToast">✅ 反馈已提交，感谢您的支持！我们会在 24 小时内处理</div>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <div class="footer-brand">
+      <img src="assets/jiqiren.png" class="footer-logo-img" alt="源养智助" />
+      <span class="logo-text">源养智助</span>
+      <p>AI体质测评 · 药食同源 · 智慧养生</p>
+    </div>
+    <div class="footer-links">
+      <a href="index.html">首页</a>
+      <a href="products.html">产品</a>
+      <a href="ai.html">AI助手</a>
+      <a href="quiz.html">体质测评</a>
+      <a href="about.html">关于</a>
+    </div>
+    <div class="footer-copy">© 2026 源养智助 · 基于AI体质测评的药食同源智慧养生平台</div>
+  </footer>
+
+  <script>
+    /* 筛选 */
+    function filterCards(type, btn) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.feedback-card').forEach(card => {
+        card.style.display = (type === 'all' || card.dataset.type === type) ? 'block' : 'none';
+      });
+    }
+
+    /* 星级评分 */
+    let currentRating = 0;
+    function setRating(n) {
+      currentRating = n;
+      document.querySelectorAll('#starRating .s').forEach((s, i) => {
+        s.classList.toggle('active', i < n);
+      });
+    }
+
+    /* 提交反馈 */
+    function submitFeedback() {
+      const name = document.getElementById('fbName').value.trim() || '匿名用户';
+      const type = document.getElementById('fbType').value;
+      const content = document.getElementById('fbContent').value.trim();
+      if (!content) { alert('请填写反馈内容'); return; }
+      if (!type) { alert('请选择反馈类型'); return; }
+
+      // 加入列表
+      const typeMap = {
+        bug: { label: '🐛 问题', cls: 'type-bug', tagCls: 'tag-bug' },
+        sugg: { label: '💡 建议', cls: 'type-sugg', tagCls: 'tag-sugg' },
+        praise: { label: '⭐ 好评', cls: 'type-praise', tagCls: 'tag-praise' },
+        question: { label: '❓ 疑问', cls: 'type-question', tagCls: 'tag-question' },
+      };
+      const t = typeMap[type];
+      const stars = '★'.repeat(currentRating || 5) + '☆'.repeat(5 - (currentRating || 5));
+      const card = document.createElement('div');
+      card.className = `feedback-card ${t.cls}`;
+      card.dataset.type = type;
+      card.innerHTML = `
+        <div class="card-header">
+          <div class="post-avatar" style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#1a4a2e,#2d6a4f);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:700;flex-shrink:0;">${name[0]}</div>
+          <div class="card-user-info">
+            <div class="card-username">${escHtml(name)}</div>
+            <div class="card-meta">${new Date().toLocaleDateString('zh-CN')} · 来自 网页端</div>
+          </div>
+          <span class="card-tag ${t.tagCls}">${t.label}</span>
+        </div>
+        <div class="card-content">${escHtml(content)}</div>
+        <div class="card-footer">
+          <div class="card-rating">${stars.split('').map(s => `<span class="star ${s==='★'?'filled':''}">${s}</span>`).join('')}</div>
+          <span class="status-badge status-pending">待处理</span>
+        </div>`;
+      document.getElementById('feedbackList').prepend(card);
+
+      // 清空表单
+      document.getElementById('fbName').value = '';
+      document.getElementById('fbType').value = '';
+      document.getElementById('fbContent').value = '';
+      setRating(0);
+
+      // 提示
+      const toast = document.getElementById('successToast');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+
+      // 滚动到新卡片
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    /* 导航栏滚动效果 */
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+    });
+    function toggleMenu() {
+      document.getElementById('navLinks').classList.toggle('open');
+    }
+  </script>
+  <script src="js/user.js"></script>
+</body>
+</html>
